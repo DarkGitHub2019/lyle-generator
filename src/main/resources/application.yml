@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: leyle-generator
+  datasource:
+    url: mysql URL
+    username: 用户名
+    password: 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    active: dev
+server:
+  port: 9200
