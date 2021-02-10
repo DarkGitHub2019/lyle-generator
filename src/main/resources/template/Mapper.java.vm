@@ -1,0 +1,17 @@
+package $package.$moduleName${moduleSeparator}mapper;  //修改
+
+import $package.$moduleName${moduleSeparator}model.dto.${className}DO;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Mapper
+public interface ${className}Mapper extends BaseMapper<${className}DO> {   //修改
+	
+}

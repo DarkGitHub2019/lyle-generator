@@ -1,42 +1,32 @@
 package com.lyle.product.generator.dao;
 
-import com.lyle.product.generator.model.Connection;
+import com.lyle.product.generator.model.Column;
 import com.lyle.product.generator.model.Page;
 import com.lyle.product.generator.model.Table;
 import com.lyle.product.generator.util.PageHelper;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Getter
 @Setter
+@Slf4j
 public class MySqlDAO {
 
-    @Autowired
-    JdbcTemplate defaultJdbcTemplate;
+    public static Map<String, JdbcTemplate> jdbcTemplateHashMap = new HashMap<>(16);
 
-    public MySqlDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public MySqlDAO() {
-        jdbcTemplate = defaultJdbcTemplate;
-    }
-
-    public static JdbcTemplate jdbcTemplate;
-
-    public List<String> showDatabases() {
+    public List<String> showDatabases(JdbcTemplate jdbcTemplate) {
         List<String> databaseNames = jdbcTemplate.queryForList("SHOW databases", String.class);
 
         if (CollectionUtils.isEmpty(databaseNames)) {
@@ -46,12 +36,12 @@ public class MySqlDAO {
         return databaseNames;
     }
 
-    public List<Table> getTableList(Page page, String schema, String searchTable) {
+    public List<Table> getTableList(JdbcTemplate jdbcTemplate, Page page, String schema, String searchTable) {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("SELECT table_name tableName, engine, table_comment tableComment, create_time createTime FROM information_schema.tables");
         stringBuilder.append(" WHERE table_schema='" + schema + "'");
-        if (StringUtils.isBlank(searchTable)) {
+        if (StringUtils.isNoneBlank(searchTable)) {
             stringBuilder.append(" AND table_name LIKE CONCAT('%','" + searchTable + "','%'");
         }
 
@@ -63,23 +53,14 @@ public class MySqlDAO {
         return tables;
     }
 
-    @PostConstruct
-    private void buildDefaultTemplate(){
-        jdbcTemplate=defaultJdbcTemplate;
+    public List<Column> getColumns(JdbcTemplate jdbcTemplate, String schema, String table) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SELECT column_name columnName, data_type dataType, column_comment columnComment, column_key columnKey, extra ");
+        stringBuilder.append("FROM information_schema.columns ");
+        stringBuilder.append("WHERE table_name ='" + table + "' AND table_schema ='" + schema + "' order by ordinal_position");
+
+        log.info(stringBuilder.toString());
+        return jdbcTemplate.query(stringBuilder.toString(), new BeanPropertyRowMapper<>(Column.class));
     }
-
-    public boolean createConnection(Connection connection){
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName(connection.getDiver());
-        dataSource.setUsername(connection.getUser());
-        dataSource.setPassword(connection.getPassword());
-        dataSource.setJdbcUrl("jdbc:mysql://"+connection.getServer()+connection.getPort());
-
-
-        JdbcTemplate jdbcTemplate2 = new JdbcTemplate(dataSource);
-
-        return  true;
-    }
-
 
 }

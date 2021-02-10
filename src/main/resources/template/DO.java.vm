@@ -1,0 +1,63 @@
+#if(${moduleName}!='')
+package ${package}.${moduleName}.model.dto;
+#else
+        package ${package}.model.dto;
+#end
+
+#if(${ormFrame}==1)
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+#end
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * $comments
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+    #if(${ormFrame}==1)
+    @TableName("${tableName}")
+    #end
+public class ${className}DO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    #foreach ($column in $columns)
+
+        /**
+         * $column.comments
+         */
+        #if(${ormFrame}==1)
+            #if($column.columnName == $pk.columnName)
+            @TableId(type = IdType.AUTO)
+            #end
+        #end
+    private $column.attrType $column.attrname;
+    #end
+
+    #foreach ($column in $columns)
+
+
+        public $column.attrType get${column.attrName} () {
+            return $column.attrname;
+        }
+
+        public void set${column.attrName} ($column.attrType $column.attrname) {
+            this.$column.attrname = $column.attrname;
+        }
+
+    #end
+
+    @Override
+    public String toString() {
+        return "${tableName}DO{"
+            #foreach($column in $columns)
+                    + "$column.attrname=" +$column.attrname
+            #end;
+    }
+}

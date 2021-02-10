@@ -4,16 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class Connection {
+public class User {
     @TableId(type = IdType.AUTO)
     Long id;
-    Long userId;
-    Integer dbType;
-    String connectionName;
-    String host;
-    Integer port;
-    String user;
+    String name;
+    String email;
     String password;
-    String driver;
+    String imageUrl;
+    Date createTime;
+    Date updateTime;
 }

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: leyle-generator
+  datasource:
+    url: jdbc:mysql://edgclearlove.top:3306/lyle_generator?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  port: 9200
+logging:
+  level:
+    com.lyle.product.generator.mapper: debug
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: on
