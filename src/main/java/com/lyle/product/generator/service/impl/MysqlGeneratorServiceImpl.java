@@ -66,7 +66,7 @@ public class MysqlGeneratorServiceImpl extends ServiceImpl<DefaultMapper, Connec
         JdbcTemplate jdbcTemplate = jdbcTemplatePool.getJdbcTemplateByConnectionId(connectionId);
         if (null == jdbcTemplate) {
             jdbcTemplate = createJdbcTemplateByConnectionId(connectionId);
-            return jdbcTemplatePool.addJdbcTemplate(connectionId, jdbcTemplate, 5L, TimeUnit.MINUTES);
+            return jdbcTemplatePool.addJdbcTemplate(connectionId, jdbcTemplate, 24L, TimeUnit.HOURS);
         }
 
         return jdbcTemplate;

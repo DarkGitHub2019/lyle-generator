@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class GenUtils {
 
-    static String  currentTableName="";
+    static String currentTableName = "";
 
     public void generatorCode(Configuration config, Table table, List<Column> columns, ZipOutputStream zip) {
 
@@ -36,7 +36,7 @@ public class GenUtils {
         tableEntity.setComments(table.getTableComment());
 
         //表名转换成Java类名
-        String className = tableToJava(tableEntity.getTableName(), new String []{config.getTablePrefix()});
+        String className = tableToJava(tableEntity.getTableName(), new String[]{config.getTablePrefix()});
         tableEntity.setClassName(className);
         tableEntity.setClassname(StringUtils.uncapitalize(className));
 
@@ -89,7 +89,11 @@ public class GenUtils {
         //封装模板数据
         Map<String, Object> map = new HashMap<>();
         map.put("tableName", tableEntity.getTableName());
-        map.put("comments", tableEntity.getComments());
+        if (org.apache.commons.lang3.StringUtils.isBlank(tableEntity.getComments())) {
+            map.put("comments", "");
+        } else {
+            map.put("comments", tableEntity.getComments());
+        }
         map.put("pk", tableEntity.getPk());
         map.put("className", tableEntity.getClassName());
         map.put("classname", tableEntity.getClassname());
@@ -105,12 +109,19 @@ public class GenUtils {
         map.put("datetime", DateUtils.format(new Date(), DateUtils.DATE_TIME_PATTERN));
         map.put("modelSpilt", config.getModelSpilt());
         map.put("moduleSeparator", config.getModuleSeparator());
-        map.put("ormFrame",config.getOrmFrame());
-        map.put("enableSwagger",config.getEnableSwagger());
+        map.put("ormFrame", config.getOrmFrame());
+        map.put("enableSwagger", config.getEnableSwagger());
         VelocityContext context = new VelocityContext(map);
 
         //获取模板列表
         List<String> templates = getTemplates();
+
+        //非mybatis框架不生成mapper文件
+        if (config.getOrmFrame()!=1&&config.getOrmFrame()!=2){
+            templates.remove("template/Mapper.java.vm");
+            templates.remove("template/Mapper.xml.vm");
+        }
+
         for (String template : templates) {
             //渲染模板
             StringWriter sw = new StringWriter();
@@ -139,7 +150,7 @@ public class GenUtils {
             typeMaps.put(textMapping.substring(0, textMapping.indexOf("=")), textMapping.substring(textMapping.indexOf("=") + 1));
         }
 
-        return  typeMaps;
+        return typeMaps;
 
     }
 
@@ -190,17 +201,16 @@ public class GenUtils {
     }
 
 
-
     /**
      * 获取文件名
      */
-    public static String getFileName(String template, String className, String packageName, String moduleName,String moduleSeparator) {
+    public static String getFileName(String template, String className, String packageName, String moduleName, String moduleSeparator) {
         String packagePath = "main" + File.separator + "java" + File.separator;
         if (StringUtils.isNotBlank(packageName)) {
             packagePath += packageName.replace(".", File.separator) + File.separator + moduleName + File.separator;
         }
         if (template.contains("MongoChildrenEntity.java.vm")) {
-            return packagePath + "entity" + File.separator + "inner" + File.separator + currentTableName+ File.separator + splitInnerName(className)+ "InnerEntity.java";
+            return packagePath + "entity" + File.separator + "inner" + File.separator + currentTableName + File.separator + splitInnerName(className) + "InnerEntity.java";
         }
         if (template.contains("Entity.java.vm") || template.contains("MongoEntity.java.vm")) {
             return packagePath + "entity" + File.separator + className + "Entity.java";
@@ -241,25 +251,25 @@ public class GenUtils {
         }
 
         if (template.contains("DTO.java.vm")) {
-            return packagePath +"model"+File.separator+ "dto" + File.separator + className + "DTO.java";
+            return packagePath + "model" + File.separator + "dto" + File.separator + className + "DTO.java";
         }
 
         if (template.contains("DO.java.vm")) {
-            return packagePath +"model"+File.separator+ "dto" + File.separator + className + "DO.java";
+            return packagePath + "model" + File.separator + "dto" + File.separator + className + "DO.java";
         }
 
         if (template.contains("Mapper.java.vm")) {
             return packagePath + "mapper" + File.separator + className + "Mapper.java";
         }
 
-        if (template.contains("template/Mapper.xml.vm")){
-            return "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName +moduleSeparator + className + "Mapper.xml";
+        if (template.contains("template/Mapper.xml.vm")) {
+            return "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName + moduleSeparator + className + "Mapper.xml";
         }
         return null;
     }
 
-    private static String splitInnerName(String name){
-        name = name.replaceAll("\\.","_");
+    private static String splitInnerName(String name) {
+        name = name.replaceAll("\\.", "_");
         return name;
     }
 }

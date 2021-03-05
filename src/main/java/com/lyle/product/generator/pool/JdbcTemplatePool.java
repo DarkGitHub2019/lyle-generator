@@ -46,9 +46,9 @@ public class JdbcTemplatePool {
     }
 
     /**
-     * 连接过期维护定时任务 每 2分钟 查询一次
+     * 连接过期维护定时任务 每 5分钟 查询一次
      */
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     private void jdbcTemplateExpireTask() {
         Set<Long> keys = expireMap.keySet();
         for (Long key : keys) {

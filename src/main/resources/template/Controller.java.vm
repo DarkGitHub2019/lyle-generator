@@ -1,7 +1,7 @@
 #if(${moduleName}!='')
-package ${package}.${moduleName}${moduleSeparator}.controller;
+package ${package}.${moduleName}${moduleSeparator}controller;
 #else
-package ${package}.controller;
+        package ${package}.controller;
 #end
 
 
@@ -20,10 +20,8 @@ import ${package}.${moduleName}${moduleSeparator}model.dto.${className}DO;
 import ${package}.${moduleName}${moduleSeparator}service.${className}Service;
 
 
-
-
 /**
- * ${comments}
+ * ${comments}Controller
  *
  * @author ${author}
  * @email ${email}
@@ -32,5 +30,6 @@ import ${package}.${moduleName}${moduleSeparator}service.${className}Service;
 @RestController
 @RequestMapping("${moduleName}/${pathName}")
 public class ${className}Controller {
+
 
 }

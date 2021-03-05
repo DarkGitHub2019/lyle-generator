@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import ${package}.${moduleName}${moduleSeparator}model.dto.${className}DO;
 
 /**
- * ${comments}
+ * ${comments}Service
  *
  * @author ${author}
  * @email ${email}
  * @date ${datetime}
  */
-public interface ${className}Service extends IService<${className}DO> {
+public interface ${className}Service #if(${ormFrame}==1)extends IService<${className}DO>#end {
+
 }
 

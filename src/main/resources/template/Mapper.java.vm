@@ -1,4 +1,4 @@
-package $package.$moduleName${moduleSeparator}mapper;  //修改
+package $package.$moduleName${moduleSeparator}mapper;
 
 import $package.$moduleName${moduleSeparator}model.dto.${className}DO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -11,7 +11,9 @@ import org.apache.ibatis.annotations.Mapper;
  * @email ${email}
  * @date ${datetime}
  */
+#if(${ormFrame}==1||${ormFrame}==2)
 @Mapper
-public interface ${className}Mapper extends BaseMapper<${className}DO> {   //修改
+#end
+public interface ${className}Mapper #if(${ormFrame}==1) extends BaseMapper<${className}DO> #end {
 	
 }
